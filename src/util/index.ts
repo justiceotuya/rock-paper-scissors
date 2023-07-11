@@ -1,4 +1,4 @@
-import { TBetPosition } from './types';
+import { TBetPosition } from '../types';
 
 /**
  * function that takes in two positions and returns the winning position or a tie
@@ -24,4 +24,14 @@ export const getWiningPosition = (position1: TBetPosition, position2: TBetPositi
     if (PaperVsScissors.includes(position1) && PaperVsScissors.includes(position2)) return "Scissors";
     return 'Tie';
 
+}
+
+/**
+ *
+ * @returns a random position from the array of positions for the computer
+ */
+export const getRandomPosition = (): TBetPosition => {
+    const positions: TBetPosition[] = ['Rock', 'Paper', 'Scissors'];
+    const randomIndex = Math.floor(Math.random() * positions.length);
+    return positions[randomIndex];
 }

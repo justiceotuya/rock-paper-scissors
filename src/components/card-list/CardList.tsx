@@ -1,8 +1,12 @@
-import Card from '../card'
-import React from 'react'
-import { TCardsArray } from '../../types'
+import React, { useCallback } from 'react'
+import { SelectedPosition, TBetPosition, TCardsArray } from '../../types'
 
-type Props = {}
+import Card from '../card'
+
+type Props = {
+    playerPosition: SelectedPosition[]
+    handlePickPosition: (betPosition: TBetPosition) => void
+}
 
 
 
@@ -19,11 +23,28 @@ const cardsArray: TCardsArray[] = [{
 ]
 
 const CardList = (props: Props) => {
-    return <div>
+    const { playerPosition, handlePickPosition } = props
 
+    let getBetAmount = useCallback(
+        (card: TCardsArray) => {
+            const position = playerPosition.find(selectedPosition => selectedPosition?.position === card.betPosition)
+            // console.log({ position })
+            return position?.amount ?? 0
+        },
+        [playerPosition],
+    )
+
+
+
+    return <div>
         <div className='flex gap-3 h-[130px] justify-center'>
-            {cardsArray.map(card => {
-                return <Card {...card} />
+            {cardsArray.map((card, idx) => {
+
+                return <Card
+                    key={idx} {...card}
+                    betAmount={getBetAmount(card)}
+                    handlePickPosition={handlePickPosition}
+                />
             })}
         </div>
     </div>
