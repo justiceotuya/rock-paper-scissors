@@ -1,6 +1,6 @@
 
 export type TBetPosition = "Rock" | "Paper" | "Scissors";
-export type TCardsArray = {
+export type TCard = {
   betPosition: TBetPosition
   color: string;
 }
@@ -10,13 +10,16 @@ export type SelectedPosition = {
   played: boolean
 }
 
+export type TCurrentGameStep = 'BETTING' | 'PLAYING_GAME_ONE' | 'PLAYING_GAME_TWO' | 'SHOW_WINNER'
+
+export type TGameStage = 'GAME_0NE' | 'GAME_TWO'
 export type State = {
   /**
    * The remaining balance that the player can stake
    */
   balance: number;
   /**
-* The cummulative bet amount rgardless of the number of poitions choosen
+* shows the total amount staked in the game before the game starts and changes to the bet amount for the current position
 */
   betAmount: number
   /**
@@ -24,29 +27,54 @@ export type State = {
 */
   winAmount: number
   /**
-   * The player position stacked in the game, maximum of 2
+   * The player position staked in the game, maximum of 2
    * */
   playerPosition: SelectedPosition[]
   /**
-   * the computer position stacked in the game
+   * the computer position staked in the game
    * */
   computerPosition: TBetPosition | null
+  /**
+   * The current game step
+   * */
+  currentGameStep: TCurrentGameStep
 
   /**
-   * first game round if the user only selects one position
+   * the game stage useful when user selects more than on position it can either be GAME_0NE or GAME_TWO
    */
-  isFirstGameRunning: boolean
+  gameStage: TGameStage
+
+/**
+ * the winning bet position after game is played
+ */
+  winningPosition: TBetPosition | 'Tie' | null
 
   /**
- * first game round if the user  selects two positions
- */
-  isSecondGameRunning: boolean
+   * indicates if the player wins
+   * */
+  playerWins: boolean
 }
 
 
-export type Action = { type: 'PICK_POSITION'; payload: TBetPosition }
-  | { type: 'BETTING_DONE' } | { type: 'GET_COMPUTERS_POSITION'; payload: TBetPosition }
-  | { type: 'CLEAR_GAME' }
-  | { type: 'RESET_GAME' }
-  | { type: 'START_FIRST_GAME', payload: boolean }
-  | { type: 'START_SECOND_GAME', payload: boolean }
+export type Action = {
+  type: 'PICK_POSITION';
+  payload: TBetPosition
+}
+  | {
+    type: 'GET_COMPUTERS_POSITION';
+    payload: TBetPosition
+  }
+  | {
+    type: 'UPDATE_GAME_STEP',
+    payload: TCurrentGameStep
+  }
+  | {
+    type: 'SHOW_WINNER',
+    payload: { winningPosition?: TBetPosition | "Tie", playerWins?: boolean }
+  }
+  | {
+    type: 'CLEAR_GAME'
+  }
+  | {
+    type: 'RESTART_GAME'
+  }

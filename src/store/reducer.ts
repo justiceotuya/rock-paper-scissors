@@ -1,15 +1,15 @@
 import { Action, State } from '../types';
 
-import { getRandomPosition } from '../util';
-
 export const initialState: State = {
     winAmount: 0,
     balance: 5000,
     betAmount: 0,
     playerPosition: [],
     computerPosition: null,
-    isFirstGameRunning: false,
-    isSecondGameRunning: false,
+    gameStage: "GAME_0NE",
+    winningPosition: null,
+    playerWins: false,
+    currentGameStep: 'BETTING',
 };
 export const reducer = (state: State, action: Action): State => {
     switch (action.type) {
@@ -63,26 +63,65 @@ export const reducer = (state: State, action: Action): State => {
             }
         }
         case 'GET_COMPUTERS_POSITION': {
-            console.log("action", action)
-            return { ...state, computerPosition: action.payload };
+
+            let newPlayerPosition = state.playerPosition.map((item, index) => {
+                if (index === 0) {
+                    return { ...item, played: true }
+                } else if (state.playerPosition[0]?.played === true) {
+                    return { ...item, played: true }
+                }
+                return item
+            })
+
+
+            return {
+                ...state, computerPosition: action.payload, playerPosition: newPlayerPosition
+            }
         }
-        case 'BETTING_DONE': {
-            console.log("action", action)
-            return { ...state };
+
+        case 'UPDATE_GAME_STEP': {
+            if (action.payload === 'PLAYING_GAME_ONE') {
+                return {
+                    ...state, currentGameStep: action.payload,
+                    gameStage: "GAME_0NE",
+                    betAmount: state.playerPosition[0].amount,
+                };
+            }
+            if (action.payload === 'PLAYING_GAME_TWO') {
+                return {
+                    ...state, currentGameStep: action.payload,
+                    winningPosition: null,
+                    playerWins: false,
+                    gameStage: "GAME_TWO",
+                    betAmount: state.playerPosition[1].amount,
+                };
+            }
+            return { ...state, currentGameStep: action.payload };
         }
-        case 'START_FIRST_GAME': {
-            console.log("action", action)
-            return { ...state, isFirstGameRunning: action.payload };
+        case 'SHOW_WINNER': {
+            const { payload, type } = action
+            if (payload?.winningPosition === "Tie") {
+                const returnBalance = state.balance + state.betAmount
+                return { ...state, winningPosition: payload?.winningPosition, balance: returnBalance, currentGameStep: 'SHOW_WINNER' }
+            } else {
+                if (!payload?.playerWins) {
+                    return { ...state, winningPosition: payload?.winningPosition ?? null, currentGameStep: 'SHOW_WINNER' }
+                }
+                //if the user selects more than one position, win bonus is 3 else win bonus is 14
+                const winBonus = state.playerPosition.length > 1 ? 3 : 14
+                const currentbetAmount = state.gameStage === "GAME_0NE" ? state.playerPosition[0].amount : state.playerPosition[1].amount
+                const winAmount = currentbetAmount * winBonus
+                return { ...state, winningPosition: payload?.winningPosition ?? null, winAmount, currentGameStep: 'SHOW_WINNER', playerWins: payload.playerWins }
+            }
         }
-        case 'START_SECOND_GAME': {
-            console.log("action", action)
-            return { ...state, isSecondGameRunning: action.payload };
-        }
+
         case 'CLEAR_GAME': {
-            return initialState;
+            return { ...state, ...initialState, balance: state.balance + state.winAmount, gameStage: 'GAME_0NE' };
         }
-        case 'RESET_GAME': {
-            return initialState;
+        case 'RESTART_GAME': {
+            return {
+                ...state, ...initialState
+            }
         }
         default:
             return initialState;

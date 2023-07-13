@@ -1,4 +1,5 @@
 import { TBetPosition } from '../types';
+import { useMemo } from 'react';
 
 /**
  * function that takes in two positions and returns the winning position or a tie
@@ -34,4 +35,15 @@ export const getRandomPosition = (): TBetPosition => {
     const positions: TBetPosition[] = ['Rock', 'Paper', 'Scissors'];
     const randomIndex = Math.floor(Math.random() * positions.length);
     return positions[randomIndex];
+}
+
+
+export const fomartCurrency = (amount: number): string => {
+    return new Intl.NumberFormat().format(amount)
+}
+
+
+export const useMemoizedContextValue = <T extends Record<string, any>>(object: T) => {
+    const value = useMemo<T>(() => object, Object.values(object));
+    return value
 }
