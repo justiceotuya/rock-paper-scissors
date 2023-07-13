@@ -1,28 +1,42 @@
-import { TBetPosition, TCardsArray } from '../../types'
+import { TCard } from '../../types'
+import { fomartCurrency } from '../../util'
+import { useGame } from '../../context/game-context'
 
-import React from 'react'
+const cardsColorStyle = (color: string, isWinningPosition: boolean) => {
 
-const cardsColorStyle = {
-    'blue': 'bg-casino-blue-dark text-casino-blue-text border-casino-blue-light-2',
-    'red': 'border-casino-red text-casino-red-text bg-casino-red-dark',
-    'green': 'border-casino-green text-casino-green-text bg-casino-green-dark',
+    switch (color) {
+        case 'blue':
+            return `bg-casino-blue-dark text-casino-blue-text border-casino-blue-light-2 ${isWinningPosition ? "border-[5px] border-casino-blue-text" : "border-[2px]"}`
+        case 'red':
+            return `border-casino-red text-casino-red-text bg-casino-red-dark ${isWinningPosition ? "border-[5px] border-casino-red-text" : "border-[2px]"}`
+        case 'green':
+            return `border-casino-green text-casino-green-text bg-casino-green-dark ${isWinningPosition ? "border-[5px] border-casino-green-text" : "border-[2px]"}`
+        default:
+            return '';
+    }
 }
 
-type ICard = TCardsArray & {
+type ICard = TCard & {
     betAmount: number
-    handlePickPosition: (betPosition: TBetPosition) => void
 }
+
 
 const Card = (props: ICard) => {
-    const { betPosition, color, betAmount, handlePickPosition } = props
+    const { betPosition, color, betAmount, } = props
+    const { winningPosition, currentGameStep, playersBet, handlePickPosition } = useGame()
 
-    const handleClickButton = () => {
-        handlePickPosition(betPosition)
+    const isWinningPosition = winningPosition === betPosition
+
+    const showBetAmount = () => {
+        if (currentGameStep === "BETTING") {
+            return betAmount > 0
+        } else return betAmount > 0 && playersBet === betPosition
     }
+
     return (
-        <button onClick={handleClickButton} type="button" className={`${cardsColorStyle[color as keyof typeof cardsColorStyle]} border-[2px] rounded-md w-full max-w-[165px] flex flex-col items-center justify-end py-[15px] hover:opacity-60 scale-1 active:scale-95`}>
-            {betAmount > 0 && <p className="border-4 border-casino-blue-light bg-white text-casino-black rounded-[50%] flex w-[45px] h-[45px] justify-center items-center text-sm font-bold mb-2.5">
-                {betAmount}
+        <button data-testid={`${betPosition}_button`} onClick={() => handlePickPosition(betPosition)} type="button" className={`${cardsColorStyle(color, isWinningPosition)}   rounded-md w-full max-w-[165px] flex flex-col items-center justify-end py-[15px] hover:opacity-60 scale-1 active:scale-95 disabled:cursor-not-allowed disabled:pointer-events-none`} disabled={currentGameStep !== "BETTING"}>
+            {showBetAmount() && <p className="border-4 border-casino-blue-light bg-white text-casino-black rounded-[50%] flex min-w-[45px] px-1 h-[45px] justify-center items-center text-sm font-bold mb-2.5 ">
+                {fomartCurrency(betAmount)}
             </p>}
             <p className="font-medium text-[22px] uppercase justify-self-end">
                 {betPosition}

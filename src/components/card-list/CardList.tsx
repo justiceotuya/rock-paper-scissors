@@ -1,16 +1,9 @@
-import React, { useCallback } from 'react'
-import { SelectedPosition, TBetPosition, TCardsArray } from '../../types'
-
 import Card from '../card'
+import { TCard } from '../../types'
+import { useCallback } from 'react'
+import { useGame } from '../../context/game-context'
 
-type Props = {
-    playerPosition: SelectedPosition[]
-    handlePickPosition: (betPosition: TBetPosition) => void
-}
-
-
-
-const cardsArray: TCardsArray[] = [{
+const cardsArray: TCard[] = [{
     betPosition: "Rock",
     color: 'blue'
 }, {
@@ -22,13 +15,12 @@ const cardsArray: TCardsArray[] = [{
 }
 ]
 
-const CardList = (props: Props) => {
-    const { playerPosition, handlePickPosition } = props
+const CardList = () => {
+    const { playerPosition } = useGame()
 
     let getBetAmount = useCallback(
-        (card: TCardsArray) => {
+        (card: TCard) => {
             const position = playerPosition.find(selectedPosition => selectedPosition?.position === card.betPosition)
-            // console.log({ position })
             return position?.amount ?? 0
         },
         [playerPosition],
@@ -43,7 +35,6 @@ const CardList = (props: Props) => {
                 return <Card
                     key={idx} {...card}
                     betAmount={getBetAmount(card)}
-                    handlePickPosition={handlePickPosition}
                 />
             })}
         </div>
