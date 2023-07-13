@@ -1,46 +1,54 @@
-# Getting Started with Create React App
+# Rock, Paper Scissor
+https://rock-paper-scissors-gray-theta.vercel.app/
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This app is a Rock, Paper Scissor game, with the ability to bet on the winning position.
 
-## Available Scripts
+## Fatures
+- Player starts with a balance of 5000.
+- Each bet is 500 and you can not bet more than 2 positions per one game but can place multilple bets on at most two positions
+- when you win a bet and you choose one position, you get 14X your stake but 3X your stake when you choose more than one position
+- Bets with tie result are returned to player
+- After round ends the return adds to the balance
+- Player cannot bet if player has less balance than available for bet.
 
-In the project directory, you can run:
+## Built with
 
-### `npm start`
+- ⚛️ React 18
+- ✨ TypeScript
+- 💨 Tailwind CSS 3
+- 🃏 Jest — Configured for unit testing
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## How to play
+- go to https://rock-paper-scissors-gray-theta.vercel.app/
+- click /select one of the position
+- click on the play button
+- wait for computer to play and show you the result
+- click on clear to continue a new game
+- you can add more money to yout bet position by continuosly clicking on the position
+- you can select two position and top them up by clicking on them
+- when you select two positions, the first round with your first chosen position will go on and when it is done, you will see the button changes to `play second position`, click on it to play the second game. NB when the game is playing the bet reflects how much you stake on that current position
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Getting Started
 
-### `npm test`
+### 1. Clone the repo:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```js
+git clone https://github.com/justiceotuya/rock-paper-scissors
+```
 
-### `npm run build`
+### 2. Install dependencies
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+cd rock-paper-scissors
+yarn install
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 3. Run the development server
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+You can start the server using this command:
 
-### `npm run eject`
+```bash
+yarn dev
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
