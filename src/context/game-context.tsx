@@ -93,7 +93,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         restartGame,
         playersBet
     }
-
+    
     return (
         <GameContext.Provider value={value}>
             {children}

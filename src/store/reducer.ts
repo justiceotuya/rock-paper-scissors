@@ -99,18 +99,24 @@ export const reducer = (state: State, action: Action): State => {
             return { ...state, currentGameStep: action.payload };
         }
         case 'SHOW_WINNER': {
-            const { payload, type } = action
+            const { payload } = action
+
             if (payload?.winningPosition === "Tie") {
                 const returnBalance = state.balance + state.betAmount
+
                 return { ...state, winningPosition: payload?.winningPosition, balance: returnBalance, currentGameStep: 'SHOW_WINNER' }
             } else {
                 if (!payload?.playerWins) {
+
                     return { ...state, winningPosition: payload?.winningPosition ?? null, currentGameStep: 'SHOW_WINNER' }
                 }
                 //if the user selects more than one position, win bonus is 3 else win bonus is 14
                 const winBonus = state.playerPosition.length > 1 ? 3 : 14
+
                 const currentbetAmount = state.gameStage === "GAME_0NE" ? state.playerPosition[0].amount : state.playerPosition[1].amount
+
                 const winAmount = currentbetAmount * winBonus
+
                 return { ...state, winningPosition: payload?.winningPosition ?? null, winAmount, currentGameStep: 'SHOW_WINNER', playerWins: payload.playerWins }
             }
         }
@@ -118,11 +124,13 @@ export const reducer = (state: State, action: Action): State => {
         case 'CLEAR_GAME': {
             return { ...state, ...initialState, balance: state.balance + state.winAmount, gameStage: 'GAME_0NE' };
         }
+
         case 'RESTART_GAME': {
             return {
                 ...state, ...initialState
             }
         }
+
         default:
             return initialState;
     }

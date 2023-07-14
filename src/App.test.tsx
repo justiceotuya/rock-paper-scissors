@@ -1,32 +1,16 @@
+/* eslint-disable jest/no-mocks-import */
 import { GameContext, TGameContext } from './context/game-context';
 import { configure, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { loosingContextValue, tiedGameContextValue, winingContextValue, winingContextValueWithTwoPositions } from './__mocks__/context';
 
 import App from './App';
 import Game from './page/game-screen';
 import React from 'react';
-import { TBetPosition } from './types';
 import userEvent from '@testing-library/user-event';
 
 configure({ asyncUtilTimeout: 3100 });
 
-const mockContextValue: TGameContext = {
-  balance: 5000,
-  betAmount: 0,
-  computerPosition: null,
-  currentGameStep: 'BETTING',
-  gameStage: 'GAME_0NE',
-  gameOver: false,
-  handlePickPosition: jest.fn(),
-  playGame: jest.fn(),
-  playSecondPosition: jest.fn(),
-  playerPosition: [],
-  restartGame: jest.fn(),
-  clearGame: jest.fn(),
-  winAmount: 0,
-  playersBet: "Rock",
-  winningPosition: null,
-  playerWins: false
-};
+
 
 function renderGame(value: TGameContext) {
   return render(
@@ -84,4 +68,56 @@ test('The bet is reduced from the balance.', async () => {
   //get balance again expect balance to be reduced by 500
   expect(screen.getByTestId('balance')).toHaveTextContent('4,500')
   expect(screen.getByTestId('bet')).toHaveTextContent('500')
+})
+
+test('when a game is tied the bet amount is returned to the player', async () => {
+  renderGame(tiedGameContextValue);
+  let Tie = await screen.findByText('Tie')
+  await expect(Tie).toBeInTheDocument()
+
+  expect(screen.getByTestId('bet')).toHaveTextContent('500')
+  expect(screen.getByTestId('winAmount')).toHaveTextContent('0')
+  expect(screen.getByTestId('balance')).toHaveTextContent('5,000')
+})
+
+
+test('Player can tie a game and the bet amount is returned to the balance', async () => {
+  renderGame(tiedGameContextValue);
+  let Tie = await screen.findByText('Tie')
+  await expect(Tie).toBeInTheDocument()
+
+  expect(screen.getByTestId('bet')).toHaveTextContent('500')
+  expect(screen.getByTestId('winAmount')).toHaveTextContent('0')
+  expect(screen.getByTestId('balance')).toHaveTextContent('5,000')
+})
+
+
+test('Loss bets are not returned to the player', async () => {
+  renderGame(loosingContextValue);
+  let lossText = await screen.findByText('Scissors')
+  await expect(lossText).toBeInTheDocument()
+
+  expect(screen.getByTestId('bet')).toHaveTextContent('500')
+  expect(screen.getByTestId('winAmount')).toHaveTextContent('0')
+  expect(screen.getByTestId('balance')).toHaveTextContent('4,500')
+})
+
+test('Player can win a game and the win amount is 14x if they choose one position', async () => {
+  renderGame(winingContextValue);
+  let winText = await screen.findByText('You Win')
+  await expect(winText).toBeInTheDocument()
+
+  expect(screen.getByTestId('bet')).toHaveTextContent('500')
+  expect(screen.getByTestId('winAmount')).toHaveTextContent('7,000')
+  expect(screen.getByTestId('balance')).toHaveTextContent('4,500')
+})
+
+test('Player can win a game and the win amount is 3x if they choose two positions', async () => {
+  renderGame(winingContextValueWithTwoPositions);
+  let winText = await screen.findByText('You Win')
+  await expect(winText).toBeInTheDocument()
+
+  expect(screen.getByTestId('bet')).toHaveTextContent('500')
+  expect(screen.getByTestId('winAmount')).toHaveTextContent('1,500')
+  expect(screen.getByTestId('balance')).toHaveTextContent('4,500')
 })
